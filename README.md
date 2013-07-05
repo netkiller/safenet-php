@@ -23,7 +23,10 @@ Test
 ----
     # /srv/php-5.2.17/bin/php -m | grep safenet
     safenet
-    
+
+    php -r "echo safenet_encrypt('helloworld');"
+    php -r "echo safenet_decrypt(safenet_encrypt('helloworld'));"
+
 Code Example:
 -------------
     <?php
