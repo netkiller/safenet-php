@@ -21,7 +21,7 @@ Installation
 
 Test
 ----
-    # /srv/php-5.2.17/bin/php -m | grep safenet
+    # /srv/php/bin/php -m | grep safenet
     safenet
 
     php -r "echo safenet_encrypt('helloworld');"
