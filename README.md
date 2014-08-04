@@ -5,6 +5,8 @@ SafeNet for PHP - http://www.safenet-inc.com/
 
 Installation
 ------------
+     # yum install -y libcurl-devel
+
      # git clone https://github.com/netkiller/safenet-php.git
      # cd safenet-php
      # /srv/php/bin/phpize
