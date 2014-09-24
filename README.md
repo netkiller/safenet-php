@@ -19,6 +19,7 @@ Installation
      [SafeNet]
      safenet.url=http://175.145.40.55/safe/interface
      safenet.key=Web01-key
+     safenet.timeout=10
      PHP
 
 Test

@@ -68,7 +68,8 @@ char * safenet(char *url, char *mode, char *key, char *in )
 	CURLcode res;
 	char *fields;
 	char *data;
-	int timeout = 10;
+	//int timeout = 10;
+	int timeout = INI_INT("safenet.timeout");
 	//curl_global_init(CURL_GLOBAL_ALL);
 	/* get a curl handle */ 
 	curl = curl_easy_init();
@@ -88,11 +89,14 @@ char * safenet(char *url, char *mode, char *key, char *in )
 		/* Perform the request, res will get the return code */ 
 		res = curl_easy_perform(curl);
 		/* Check for errors */ 
-		if(res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed: %s\n",
-		curl_easy_strerror(res));
+		if(res != CURLE_OK){
+			//fprintf(stderr, "curl_easy_perform() failed: %s\n",
+			strcpy(data, in);
+		}else{
+			asprintf(&data, "%s", s.ptr);
+		}
+		curl_easy_strerror(res);
 
-		asprintf(&data, "%s", s.ptr);
 		//printf("Encrypt: %s\n", data);
 
 		free(s.ptr);
@@ -158,6 +162,7 @@ PHP_INI_BEGIN()
     //STD_PHP_INI_ENTRY("safenet.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_safenet_globals, safenet_globals)
     PHP_INI_ENTRY("safenet.url", "http://localhost/", PHP_INI_ALL, NULL)
     PHP_INI_ENTRY("safenet.key", "key01", PHP_INI_ALL, NULL)
+    PHP_INI_ENTRY("safenet.timeout", "20", PHP_INI_ALL, NULL)
 PHP_INI_END()
 
 /* }}} */
@@ -222,6 +227,7 @@ PHP_MINFO_FUNCTION(safenet)
 	php_info_print_table_row(2, "author", "Neo Chan<netkiller@msn.com>");
 	php_info_print_table_row(2, "safenet.url", INI_STR("safenet.url"));
 	php_info_print_table_row(2, "safenet.key", INI_STR("safenet.key"));
+	php_info_print_table_row(2, "safenet.timeout", INI_STR("safenet.timeout"));
 	php_info_print_table_end();
 
 	/* Remove comments if you have entries in php.ini
