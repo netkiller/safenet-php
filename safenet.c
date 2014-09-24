@@ -33,76 +33,76 @@
 
 /* CURL FUNCTION BEGIN*/
 struct string {
-  char *ptr;
-  size_t len;
+	char *ptr;
+	size_t len;
 };
 
 void init_string(struct string *s) {
-  s->len = 0;
-  s->ptr = malloc(s->len+1);
-  if (s->ptr == NULL) {
-    fprintf(stderr, "malloc() failed\n");
-    exit(EXIT_FAILURE);
-  }
-  s->ptr[0] = '\0';
+	s->len = 0;
+	s->ptr = malloc(s->len+1);
+	if (s->ptr == NULL) {
+		fprintf(stderr, "malloc() failed\n");
+		exit(EXIT_FAILURE);
+	}
+	s->ptr[0] = '\0';
 }
 
 size_t writefunc(void *ptr, size_t size, size_t nmemb, struct string *s)
 {
-  size_t new_len = s->len + size*nmemb;
-  s->ptr = realloc(s->ptr, new_len+1);
-  if (s->ptr == NULL) {
-    fprintf(stderr, "realloc() failed\n");
-    exit(EXIT_FAILURE);
-  }
-  memcpy(s->ptr+s->len, ptr, size*nmemb);
-  s->ptr[new_len] = '\0';
-  s->len = new_len;
+	size_t new_len = s->len + size*nmemb;
+	s->ptr = realloc(s->ptr, new_len+1);
+	if (s->ptr == NULL) {
+		fprintf(stderr, "realloc() failed\n");
+		exit(EXIT_FAILURE);
+	}
+	memcpy(s->ptr+s->len, ptr, size*nmemb);
+	s->ptr[new_len] = '\0';
+	s->len = new_len;
 
-  return size*nmemb;
+	return size*nmemb;
 }
 
 char * safenet(char *url, char *mode, char *key, char *in )
 { 
-  CURL *curl;
-  CURLcode res;
-  char *fields;
-  char *data;
-  /* In windows, this will init the winsock stuff */ 
-//  curl_global_init(CURL_GLOBAL_ALL);
- 
-  /* get a curl handle */ 
-  curl = curl_easy_init();
-  if(curl) {
-    struct string s;
-    init_string(&s); 
-    
-    asprintf(&fields, "mode=%s&keyname=%s&input=%s", mode, key, in);    
+	CURL *curl;
+	CURLcode res;
+	char *fields;
+	char *data;
+	int timeout = 10;
+	//curl_global_init(CURL_GLOBAL_ALL);
+	/* get a curl handle */ 
+	curl = curl_easy_init();
+	if(curl) {
+		struct string s;
+		init_string(&s); 
 
-    curl_easy_setopt(curl, CURLOPT_URL, url);
-    curl_easy_setopt(curl, CURLOPT_USERAGENT, "safenet/1.0 by netkiller <netkiller@msn.com>");
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields);
- 
-    /* Perform the request, res will get the return code */ 
-    res = curl_easy_perform(curl);
-    /* Check for errors */ 
-    if(res != CURLE_OK)
-      fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              curl_easy_strerror(res));
- 
-    asprintf(&data, "%s", s.ptr);
-    //printf("Encrypt: %s\n", data);
+		asprintf(&fields, "mode=%s&keyname=%s&input=%s", mode, key, in);    
 
-    free(s.ptr);
-    /* always cleanup */ 
-    curl_easy_cleanup(curl);
-  }
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "safenet/1.0 by netkiller <netkiller@msn.com>");
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, fields);
+		curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
+ 
+		/* Perform the request, res will get the return code */ 
+		res = curl_easy_perform(curl);
+		/* Check for errors */ 
+		if(res != CURLE_OK)
+			fprintf(stderr, "curl_easy_perform() failed: %s\n",
+		curl_easy_strerror(res));
 
-    //printf("POST: %s\r\n", fields);
-    return data;
-  //curl_global_cleanup();
+		asprintf(&data, "%s", s.ptr);
+		//printf("Encrypt: %s\n", data);
+
+		free(s.ptr);
+		/* always cleanup */ 
+		curl_easy_cleanup(curl);
+	}
+
+	//printf("POST: %s\r\n", fields);
+	return data;
+	//curl_global_cleanup();
 }
 /* CURL FUNCTION END*/
 
@@ -260,30 +260,30 @@ PHP_FUNCTION(confirm_safenet_compiled)
 
 PHP_FUNCTION(safenet_encrypt)
 {
-char *arg = NULL;
-int arg_len, len;
-char *strg;
+	char *arg = NULL;
+	int arg_len, len;
+	char *strg;
 
-if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
-return;
-}
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+		return;
+	}
 
-len = spprintf(&strg, 0, "%s", safenet(INI_STR("safenet.url"), "encrypt", INI_STR("safenet.key"), arg));
-RETURN_STRINGL(strg, len, 0);
+	len = spprintf(&strg, 0, "%s", safenet(INI_STR("safenet.url"), "encrypt", INI_STR("safenet.key"), arg));
+	RETURN_STRINGL(strg, len, 0);
 }
 
 PHP_FUNCTION(safenet_decrypt)
 {
-char *arg = NULL;
-int arg_len, len;
-char *strg;
+	char *arg = NULL;
+	int arg_len, len;
+	char *strg;
 
-if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
-return;
-}
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
+		return;
+	}
 
-len = spprintf(&strg, 0, "%s", safenet(INI_STR("safenet.url"), "decrypt", INI_STR("safenet.key"), arg));
-RETURN_STRINGL(strg, len, 0);
+	len = spprintf(&strg, 0, "%s", safenet(INI_STR("safenet.url"), "decrypt", INI_STR("safenet.key"), arg));
+	RETURN_STRINGL(strg, len, 0);
 }
 
 
