@@ -1,0 +1,17 @@
+{
+    "name": "netkiller/safenet-php",
+    "type": "library",
+    "description": "This tools provide you useful function to encrypt/decrypt string.",
+    "keywords": ["safenet"],
+    "homepage": "http://netkiller.github.io",
+    "license": "CC 3.0",
+    "authors": [
+        {
+            "name": "Neo Chen",
+            "email": "netkiller@msn.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+    }
+}
