@@ -287,8 +287,15 @@ PHP_FUNCTION(safenet_decrypt)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &arg, &arg_len) == FAILURE) {
 		return;
 	}
-
+    
+    if(arg_len!=512)
+    {
+		len = spprintf(&strg, 0, "%s", arg);
+    }
+    else
+    {
 	len = spprintf(&strg, 0, "%s", safenet(INI_STR("safenet.url"), "decrypt", INI_STR("safenet.key"), arg));
+	}
 	RETURN_STRINGL(strg, len, 0);
 }
 
